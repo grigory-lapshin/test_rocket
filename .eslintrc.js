@@ -1,7 +1,8 @@
 module.exports = {
   "env": {
       "node": true,
-      "es6": true
+      "es6": true,
+      "react-native/react-native": true
   },
   "extends": [
       "airbnb", "prettier"
@@ -18,7 +19,7 @@ module.exports = {
       "sourceType": "module"
   },
   "plugins": [
-      "react",  "prettier"
+      "react", "react-native",  "prettier"
   ],
   "parser": "babel-eslint",
   "rules": {
