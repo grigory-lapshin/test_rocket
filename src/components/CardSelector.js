@@ -5,6 +5,12 @@ import {PanGestureHandler, State} from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import {useMemoOne} from 'use-memo-one';
 import {snapPoint, verticalPanGestureHandler} from 'react-native-redash';
+import Card from './Card';
+import {
+  OFFSET_BASIS,
+  SCROLL_THRESHOLD,
+  cardDimensions,
+} from '../dimensionsUtils';
 
 const {
   SpringUtils,
@@ -32,12 +38,13 @@ const {
   diff,
   pow,
   min,
+  log,
+  interpolate,
 } = Animated;
 
 const styles = StyleSheet.create({
   container: {
     height: '100%',
-    paddingVertical: 100,
     backgroundColor: 'pink',
 
     flexDirection: 'column',
@@ -57,7 +64,7 @@ const {height} = Dimensions.get('window');
 const friction = ratio => multiply(0.52, pow(sub(1, ratio), 2));
 
 const UPPER_BOUND = 0;
-const LOWER_BOUND = -1 * height * 0.33;
+const LOWER_BOUND = -SCROLL_THRESHOLD;
 
 const withScroll = ({translationY, velocityY, state: gestureState}) => {
   const clock = new Clock();
@@ -86,7 +93,6 @@ const withScroll = ({translationY, velocityY, state: gestureState}) => {
   return block([
     startClock(clock),
     set(delta, diff(translationY)),
-
     cond(
       eq(gestureState, State.ACTIVE),
       // When dragging
@@ -146,6 +152,19 @@ const withScroll = ({translationY, velocityY, state: gestureState}) => {
   ]);
 };
 
+const cards = [
+  {
+    title: 'Виртуальная карта',
+    capture:
+      'Это виртуальная карта Рокетбанка. Она как физическая, только виртуальная',
+  },
+  {
+    title: 'Физическая карта',
+    capture:
+      'А это физическая карта Рокетбанка. Она как вирутальная, только физическая',
+  },
+];
+
 const CardSelector = ({children}) => {
   const {gestureHandler, translationY, velocityY, state} = useMemoOne(
     () => verticalPanGestureHandler(),
@@ -153,6 +172,26 @@ const CardSelector = ({children}) => {
   );
 
   const translateY = withScroll({translationY, velocityY, state});
+
+  const cardsOffsets = cards.map(_ => new Value(0));
+
+  useCode(
+    block(
+      cardsOffsets.map((offset, index) =>
+        set(
+          offset,
+          interpolate(translateY, {
+            inputRange: [-SCROLL_THRESHOLD, 0],
+            outputRange: [
+              (SCROLL_THRESHOLD + index * OFFSET_BASIS) / 2,
+              (index + 1) * OFFSET_BASIS,
+            ],
+          }),
+        ),
+      ),
+    ),
+    [translateY],
+  );
 
   return (
     <PanGestureHandler {...gestureHandler}>
@@ -166,8 +205,16 @@ const CardSelector = ({children}) => {
               },
             ],
           },
-        ]}>
-        {children}
+        ]}
+      >
+        {cards.map((card, index) => (
+          <Card
+            key={String(index)}
+            index={index}
+            card={card}
+            cardsOffsets={cardsOffsets}
+          />
+        ))}
       </Animated.View>
     </PanGestureHandler>
   );

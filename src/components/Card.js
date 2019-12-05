@@ -1,19 +1,21 @@
 import React from 'react';
 import {View, Text, StyleSheet, Dimensions} from 'react-native';
+import Animated from 'react-native-reanimated';
+import {SCREEN_HEIGHT, cardDimensions} from '../dimensionsUtils';
 
-const {width, height} = Dimensions.get('window');
+const {Extrapolate, interpolate, log, useCode, multiply} = Animated;
 
-const cardWidth = width * 0.66;
-const cardHeigh = width * 0.66 * 0.628;
+const THRESHOLD = SCREEN_HEIGHT * 0.25;
 
-const verticalPadding = height * 0.33 - cardHeigh;
-
-const cardDimensions = {width: cardWidth, height: cardHeigh};
+const containerHeight = cardDimensions.height * 2.5;
 
 const styles = StyleSheet.create({
-  cardContainer: {
+  container: {
+    justifyContent: 'flex-end',
     alignSelf: 'stretch',
     alignItems: 'center',
+    borderColor: 'black',
+    borderWidth: 0.5,
   },
   card: {
     width: cardDimensions.width,
@@ -28,13 +30,28 @@ const styles = StyleSheet.create({
   },
 });
 
-const Capture = () => <Text style={styles.capture}>Виртуальная карта</Text>;
+const Capture = ({children}) => <Text style={styles.capture}>{children}</Text>;
 
-const Card = () => (
-  <View style={styles.cardContainer}>
-    <View style={styles.card} />
-    <Capture>Test</Capture>
-  </View>
-);
+const Card = ({card, cardsOffsets, index}) => {
+  const {title, capture} = card;
+  console.log(card);
+  return (
+    <Animated.View
+      style={[
+        styles.container,
+        {
+          transform: [
+            {
+              translateY: cardsOffsets[index],
+            },
+          ],
+        },
+      ]}>
+      <Capture>{title}</Capture>
+      <View style={styles.card} />
+      <Capture>{capture}</Capture>
+    </Animated.View>
+  );
+};
 
 export default Card;
