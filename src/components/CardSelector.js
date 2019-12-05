@@ -99,6 +99,7 @@ const withScroll = ({translationY, velocityY, state: gestureState}) => {
             cond(
               isInBound,
               delta,
+              // Create nice effect of stickennes of boundaries, like iOS scroll do
               multiply(
                 delta,
                 friction(min(divide(abs(overscroll), height), 1)),
@@ -114,8 +115,8 @@ const withScroll = ({translationY, velocityY, state: gestureState}) => {
         set(translationY, 0),
         cond(
           and(isInBound, not(isSpringing)),
-          // decay make scroll to have inertia
           [
+            // decay make scroll to have inertia
             decay(clock, state, {deceleration: 0.997}),
             set(isSpringing, 1),
             set(
