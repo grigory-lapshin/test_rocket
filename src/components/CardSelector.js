@@ -173,8 +173,7 @@ const CardSelector = () => {
               },
             ],
           },
-        ]}
-      >
+        ]}>
         {cards.map((card, index) => (
           <Card
             key={String(index)}

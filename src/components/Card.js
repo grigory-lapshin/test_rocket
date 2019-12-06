@@ -41,56 +41,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const Title = ({titleOffset, titleOpacity, top, children}) => (
-  <Animated.Text
-    style={[
-      top ? styles.titleTop : styles.titleBottom,
-      {
-        transform: [
-          {
-            translateY: titleOffset,
-          },
-        ],
-        opacity: titleOpacity,
-      },
-    ]}>
-    {children}
-  </Animated.Text>
-);
-
-const Capture = ({captureOffset, captureOpacity, children}) => (
-  <Animated.Text
-    style={[
-      styles.captureText,
-
-      {
-        transform: [
-          {
-            translateY: captureOffset,
-          },
-        ],
-        opacity: captureOpacity,
-      },
-    ]}
-  >
-    {children}
-  </Animated.Text>
-);
-
-const Card = ({card: {title, capture}, cardsOffsets, translateY, index}) => {
-  const containerOffset = cardsOffsets[index];
-
-  const captureOffset = interpolate(translateY, {
-    inputRange: [-SCROLL_THRESHOLD, 0],
-    outputRange:
-      index === 0 ? [-cardDimensions.height, 0] : [0, -cardDimensions.height],
-  });
-
-  const captureOpacity = interpolate(translateY, {
-    inputRange: [-SCROLL_THRESHOLD / 8, 0],
-    outputRange: index === 0 ? [0, 1] : [1, 0],
-  });
-
+const Title = ({translateY, index, children}) => {
   const titleOffset = interpolate(translateY, {
     inputRange: [-SCROLL_THRESHOLD, 0],
     outputRange:
@@ -105,6 +56,58 @@ const Card = ({card: {title, capture}, cardsOffsets, translateY, index}) => {
   });
 
   return (
+    <Animated.Text
+      style={[
+        index !== 0 ? styles.titleTop : styles.titleBottom,
+        {
+          transform: [
+            {
+              translateY: titleOffset,
+            },
+          ],
+          opacity: titleOpacity,
+        },
+      ]}>
+      {children}
+    </Animated.Text>
+  );
+};
+
+const Capture = ({translateY, index, children}) => {
+  const captureOffset = interpolate(translateY, {
+    inputRange: [-SCROLL_THRESHOLD, 0],
+    outputRange:
+      index === 0 ? [-cardDimensions.height, 0] : [0, -cardDimensions.height],
+  });
+
+  const captureOpacity = interpolate(translateY, {
+    inputRange: [-SCROLL_THRESHOLD / 8, 0],
+    outputRange: index === 0 ? [0, 1] : [1, 0],
+  });
+
+  return (
+    <Animated.Text
+      style={[
+        styles.captureText,
+
+        {
+          transform: [
+            {
+              translateY: captureOffset,
+            },
+          ],
+          opacity: captureOpacity,
+        },
+      ]}>
+      {children}
+    </Animated.Text>
+  );
+};
+
+const Card = ({card: {title, capture}, cardsOffsets, translateY, index}) => {
+  const containerOffset = cardsOffsets[index];
+
+  return (
     <Animated.View
       style={[
         styles.container,
@@ -115,16 +118,11 @@ const Card = ({card: {title, capture}, cardsOffsets, translateY, index}) => {
             },
           ],
         },
-      ]}
-    >
-      <Title
-        titleOffset={titleOffset}
-        titleOpacity={titleOpacity}
-        top={index !== 0}
-      >
+      ]}>
+      <Title translateY={translateY} index={index}>
         {title}
       </Title>
-      <Capture captureOffset={captureOffset} captureOpacity={captureOpacity}>
+      <Capture translateY={translateY} index={index}>
         {capture}
       </Capture>
       <View style={styles.card} />
