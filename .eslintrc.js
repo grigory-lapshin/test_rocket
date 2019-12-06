@@ -23,10 +23,11 @@ module.exports = {
   ],
   "parser": "babel-eslint",
   "rules": {
-          "prettier/prettier": "error", 
+          "prettier/prettier": 1, 
           "react/jsx-filename-extension": ["off"], 
           "react/prop-types": ["off"], 
           "import/no-dynamic-require": ["off"] ,
           "global-require": ["off"],
+          "react/jsx-props-no-spreading": ["off"],
   }
 };
