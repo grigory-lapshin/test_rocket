@@ -142,22 +142,23 @@ const CardSelector = () => {
   const cardsOffsets = cards.map(() => new Value(0));
 
   useCode(
-    block([
-      set(translateY, withScroll({translationY, velocityY, state})),
-      // calc offsets for every card
-      cardsOffsets.map((offset, index) =>
-        set(
-          offset,
-          interpolate(translateY, {
-            inputRange: [-SCROLL_THRESHOLD, 0],
-            outputRange: [
-              (SCROLL_THRESHOLD + index * OFFSET_BASIS) / 2,
-              (index + 1) * OFFSET_BASIS,
-            ],
-          }),
+    () =>
+      block([
+        set(translateY, withScroll({translationY, velocityY, state})),
+        // calc offsets for every card
+        cardsOffsets.map((offset, index) =>
+          set(
+            offset,
+            interpolate(translateY, {
+              inputRange: [-SCROLL_THRESHOLD, 0],
+              outputRange: [
+                (SCROLL_THRESHOLD + index * OFFSET_BASIS) / 2,
+                (index + 1) * OFFSET_BASIS,
+              ],
+            }),
+          ),
         ),
-      ),
-    ]),
+      ]),
     [],
   );
 
