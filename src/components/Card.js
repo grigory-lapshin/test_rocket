@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
+import {Image, StyleSheet} from 'react-native';
 import Animated from 'react-native-reanimated';
 import {
   cardDimensions,
@@ -125,7 +125,7 @@ const Card = ({card: {title, capture}, cardsOffsets, translateY, index}) => {
       <Capture translateY={translateY} index={index}>
         {capture}
       </Capture>
-      <View style={styles.card} />
+      <Image style={styles.card} source={require('../assets/card.png')} />
     </Animated.View>
   );
 };
